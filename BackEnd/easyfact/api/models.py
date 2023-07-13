@@ -72,8 +72,6 @@ class Producto(models.Model):
     id_producto = models.AutoField(primary_key=True)
     id_iva_per = models.IntegerField(auto_created=True)
     producto = models.CharField(max_length=100)
-    icono = models.ImageField(
-        upload_to='static/iconos/', blank=True, null=True)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
@@ -157,3 +155,13 @@ class Detalle_factura(models.Model):
     class Meta:
         managed = False
         db_table = 'detalle_factura'
+
+
+class Documento(models.Model):
+    id_documento = models.AutoField(primary_key=True)
+    xml = models.FileField(upload_to='static/email/xml/', blank=True, null=True)
+    ride = models.FileField(upload_to='static/email/pdf/', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'documento'
