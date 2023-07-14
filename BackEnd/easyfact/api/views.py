@@ -685,6 +685,16 @@ class AbrirFacturaView(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
+    def delete(self, request, id_factura=None):
+        try:
+            if Factura.objects.filter(id_factura=id_factura).exists():
+                Factura.objects.filter(id_factura=id_factura, estado="abierta").delete()
+                datos = SUCCESS_MESSAGE
+            else:
+                datos = NOT_DATA_MESSAGE
+        except Exception as e:
+            datos = ERROR_MESSAGE
+        return JsonResponse(datos)
 
 class AgregarProductoView(View):
     @method_decorator(csrf_exempt)
