@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.views import View
 from datetime import date, timedelta, datetime
 from django.utils.timezone import now
-from django.db.models import Max, Sum, Count
+from django.db.models import Max, Sum, Case, When, IntegerField
 from io import BytesIO
 import json
 import os
@@ -1309,11 +1309,16 @@ class ProductoEstrellaView(View):
     def get(self, request, id_empresa=None):
         if id_empresa is not None:
             fecha_inicio = date.today() - timedelta(days=30)
+
+            subquery_facturas = Factura.objects.filter(
+                id_usuario_per=id_empresa,
+                fecha__range=[fecha_inicio, date.today()]
+            ).values('id_factura')
+
             producto_mas_vendido = Detalle_factura.objects.filter(
-                id_factura_per__id_usuario_per__id_empresa_per=id_empresa,
-                id_factura_per__fecha__range=[fecha_inicio, date.today()]
+                id_factura_per__in=subquery_facturas
             ).values('id_producto_per').annotate(
-                total_vendido=Sum('cantidad')
+                total_vendido=Sum('cantidad', output_field=IntegerField())
             ).order_by('-total_vendido').first()
 
             if producto_mas_vendido:
@@ -1324,6 +1329,39 @@ class ProductoEstrellaView(View):
                     'producto': producto.producto,
                     'id_producto': id_producto,
                     'unidades_vendidas': unidades_vendidas
+                }
+            else:
+                datos = NOT_DATA_MESSAGE
+        else:
+            datos = NOT_DATA_MESSAGE
+
+        return JsonResponse(datos)
+
+class ClienteEstrellaView(View):
+    def get (self, request, id_empresa=None):
+        if id_empresa is not None:
+            fecha_inicio = date.today() - timedelta(days=30)
+
+            subquery_facturas = Factura.objects.filter(
+                id_usuario_per=id_empresa,
+                estado='cerrada',
+                fecha__range=[fecha_inicio, date.today()]
+            ).values('id_factura')
+
+            cliente_mas_compro = Factura.objects.filter(
+                id_factura__in=subquery_facturas
+            ).values('id_cliente_per').annotate(
+                total_comprado=Sum('total', output_field=IntegerField())
+            ).order_by('-total_comprado').first()
+
+            if cliente_mas_compro:
+                id_cliente = cliente_mas_compro['id_cliente_per']
+                total_comprado = cliente_mas_compro['total_comprado']
+                cliente = Cliente.objects.get(id_cliente=id_cliente)
+                datos = {
+                    'cliente': cliente.nombre,
+                    'id_cliente': id_cliente,
+                    'total_comprado': total_comprado
                 }
             else:
                 datos = NOT_DATA_MESSAGE
