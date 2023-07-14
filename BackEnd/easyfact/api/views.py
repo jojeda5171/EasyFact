@@ -519,13 +519,13 @@ class ClienteVista(View):
         return super().dispatch(request, *args, **kwargs)
 
     # def get(self, request, numero_identificacion=None, ruc=None):
-    def get(self, request, numero_identificacion=None, id_empresa=None):
+    def get(self, request, id_cliente=None, id_empresa=None):
         try:
-            if numero_identificacion is not None and Cliente.objects.filter(id_cliente__in=Detalle_empresa_cliente.objects.filter(id_empresa_per=id_empresa).values('id_cliente_per'), numero_identificacion=numero_identificacion).exists():
+            if id_cliente is not None and Cliente.objects.filter(id_cliente__in=Detalle_empresa_cliente.objects.filter(id_empresa_per=id_empresa).values('id_cliente_per'), id_cliente=id_cliente).exists():
                 cliente = Cliente.objects.filter(id_cliente__in=Detalle_empresa_cliente.objects.filter(
-                    id_empresa_per=id_empresa).values('id_cliente_per'), numero_identificacion=numero_identificacion).values().first()
+                    id_empresa_per=id_empresa).values('id_cliente_per'), id_cliente=id_cliente).values().first()
                 datos = {'cliente': cliente}
-            elif numero_identificacion is None and id_empresa is not None:
+            elif id_cliente is None and id_empresa is not None:
                 clientes = list(Cliente.objects.filter(id_cliente__in=Detalle_empresa_cliente.objects.filter(
                     id_empresa_per=id_empresa).values('id_cliente_per')).values())
                 datos = {'clientes': clientes}
@@ -696,6 +696,7 @@ class AbrirFacturaView(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
+
 class AgregarProductoView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
@@ -704,9 +705,11 @@ class AgregarProductoView(View):
     def post(self, request):
         try:
             jsonData = json.loads(request.body)
-            usuario = Usuario.objects.get(correo=jsonData['id_usuario_per'])
-            factura = Factura.objects.get(
-                numero_factura=jsonData['id_factura_per'], estado='abierta', id_cliente_per=Cliente.objects.get(numero_identificacion=jsonData['id_cliente_per']).id_cliente, id_usuario_per=usuario.id_usuario)
+            #id_factura_per, id_producto_per, cantidad
+            #usuario = Usuario.objects.get(id_usuario=jsonData['id_usuario_per'])
+            #factura = Factura.objects.get(
+                #numero_factura=jsonData['id_factura_per'], estado='abierta', id_cliente_per=Cliente.objects.get(numero_identificacion=jsonData['id_cliente_per']).id_cliente, id_usuario_per=usuario.id_usuario)
+            factura = Factura.objects.get(id_factura=jsonData['id_factura_per'])
             if Factura.objects.filter(id_factura=factura.id_factura).exists() and Producto.objects.filter(id_producto=jsonData['id_producto_per']).exists():
                 producto = Producto.objects.filter(
                     id_producto=jsonData['id_producto_per']).values().first()
@@ -763,15 +766,13 @@ class CerrarFacturaView(View):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request):
+        factura = Factura.objects.get(id_factura=jsonData['id_factura_per'])
         try:
             jsonData = json.loads(request.body)
-            usuario = Usuario.objects.get(correo=jsonData['id_usuario_per'])
+            usuario = Usuario.objects.get(id_usuario=factura.id_usuario_per)
             empresa = Empresa.objects.get(id_empresa=usuario.id_empresa_per)
-            factura = Factura.objects.get(
-                numero_factura=jsonData['id_factura_per'], estado='abierta', id_cliente_per=Cliente.objects.get(numero_identificacion=jsonData['id_cliente_per']).id_cliente, id_usuario_per=usuario.id_usuario)
             if factura is not None:
-                factura.id_forma_pago_per = Forma_pago.objects.get(
-                    forma_pago=jsonData['id_forma_pago_per']).id_forma_pago
+                factura.id_forma_pago_per = jsonData['id_forma_pago_per']
                 factura.clave_acceso = self.generar_clave_acceso(factura.fecha.strftime(
                     '%d%m%Y'), '01', empresa.ruc, '1', '001100', str(factura.numero_factura).zfill(9), '71011173', '1')
                 subtotal = 0
@@ -784,8 +785,9 @@ class CerrarFacturaView(View):
                 factura.subtotal = subtotal
                 factura.total_iva = total_iva
                 factura.total = total
+                factura.id_cliente_per = jsonData['id_cliente_per']
                 factura.estado = 'cerrada'
-                #factura.save()
+                factura.save()
                 ride = self.generar_pdf_factura(factura, Detalle_factura.objects.filter(
                     id_factura_per=factura.id_factura, id_producto_per__in=Detalle_empresa_producto.objects.filter(id_empresa_per=usuario.id_empresa_per).values('id_producto_per')))
                 xml_data = self.generar_xml(factura, Detalle_factura.objects.filter(
@@ -795,11 +797,12 @@ class CerrarFacturaView(View):
                 documentos = self.guardar_comprobantes(
                     ride, signed_xml, factura.clave_acceso)
                 self.enviar_comprobante_correo(documentos, factura)
-                factura.save()
-                datos = SUCCESS_MESSAGE
+                datos = {"Factura": factura}
             else:
                 datos = ERROR_MESSAGE
-        except Exception as e:
+        except:
+            factura.estado = 'abierta'
+            factura.save()
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
@@ -1287,3 +1290,14 @@ class CerrarFacturaView(View):
         if dv == 11:
             return 0
         return dv
+
+
+class FormaPagoView(View):
+    def get(self, request, id_forma_pago=None):
+        if id_forma_pago is not None:
+            forma_pago = Forma_pago.objects.get(id_forma_pago=id_forma_pago)
+            datos= {"Forma_pago": forma_pago}
+        else:
+            formas_pago = Forma_pago.objects.all()
+            datos= {"Formas_pago": formas_pago}
+        return JsonResponse(datos)

@@ -1,6 +1,6 @@
 from django.urls import path
 # from .views import CompanyView
-from .views import UsuarioVista, EmpresaVista, LogoVista, FirmaVista, IvaVista, ProductoVista, IconoProductoVista, ClienteVista, LicenciaVista, IvaProductoVista, AbrirFacturaView, AgregarProductoView, CerrarFacturaView, MostrarFacturaView
+from .views import UsuarioVista, EmpresaVista, LogoVista, FirmaVista, IvaVista, ProductoVista, IconoProductoVista, ClienteVista, LicenciaVista, IvaProductoVista, AbrirFacturaView, AgregarProductoView, CerrarFacturaView, MostrarFacturaView, FormaPagoView
 
 urlpatterns = [
     path('usuario/', UsuarioVista.as_view(), name='usuario_lista'),
@@ -20,7 +20,7 @@ urlpatterns = [
     path('producto/<str:id_empresa>/<str:id_producto>/', ProductoVista.as_view(), name='producto_proceso'),
     path('productoiva/<str:ruc>/<str:producto>/', IvaProductoVista.as_view(), name='producto_proceso'), #editar el producto con el iva
     path('productoicono/<str:ruc>/<str:producto>/', IconoProductoVista.as_view(), name='icono_producto_proceso'),
-    path('cliente/<str:numero_identificacion>/<str:id_empresa>/', ClienteVista.as_view(), name='cliente_proceso'),#get ciente de una empresa
+    path('cliente/<str:id_cliente>/<str:id_empresa>/', ClienteVista.as_view(), name='cliente_proceso'),#get ciente de una empresa
     path('cliente/<str:id_empresa>/', ClienteVista.as_view(), name='cliente'),
     path('licencia/<str:ruc>/', LicenciaVista.as_view(), name='licencia_proceso'),
     path('abrirfactura/', AbrirFacturaView.as_view(), name='abrirfactura_proceso'),
@@ -29,4 +29,6 @@ urlpatterns = [
     path('agregarproducto/<str:id_empresa>/', AgregarProductoView.as_view(), name='agregarproducto_proceso'),
     path('cerrarfactura/', CerrarFacturaView.as_view(), name='cerrarfactura_proceso'),
     path('verFacturas/<str:id_empresa>/', MostrarFacturaView.as_view(), name='verFacturas_proceso'),
+    path('formapago/', FormaPagoView.as_view(), name='formapago_lista'),
+    path('formapago/<str:id_forma_pago>/', FormaPagoView.as_view(), name='formapago_proceso'),
 ]
