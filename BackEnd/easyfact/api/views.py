@@ -738,7 +738,7 @@ class MostrarFacturaView(View):
             if facturas_empresa.exists():
                 datos = {"Facturas": list(facturas_empresa)}
             else:
-                datos = NOT_DATA_MESSAGE
+                datos = {"Facturas": []}
         except Exception as e:
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
