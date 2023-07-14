@@ -406,8 +406,7 @@ class ProductoVista(View):
         try:
             jsonData = json.loads(request.body)
             nuevo_producto = Producto.objects.create(
-                id_iva_per=Iva.objects.filter(iva_nombre=jsonData['id_iva_per']).values(
-                    'id_iva').first()['id_iva'],
+                id_iva_per=jsonData['id_iva_per'],
                 producto=jsonData['producto'],
                 precio=jsonData['precio']
             )
@@ -675,15 +674,13 @@ class AbrirFacturaView(View):
         return numero_factura
 
     def get(self, request, id_empresa=None):
-        facturas_empresa = Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter(
-            id_empresa_per=id_empresa).values('id_usuario'))
-        numero_factura = facturas_empresa.aggregate(Max('numero_factura'))[
-            'numero_factura__max']
-        if numero_factura is None:
-            numero_factura = 1
-        else:
-            numero_factura = numero_factura+1
-        return JsonResponse({'numero_factura': numero_factura})
+        try:
+            facturas = list(Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter(
+                id_empresa_per=id_empresa).values(), estado='abierta').values())
+            datos = {'facturas': facturas}
+        except Exception as e:
+            datos = ERROR_MESSAGE
+        return JsonResponse(datos)
 
     def put(self, request, id_factura=None):
         try:
@@ -1253,10 +1250,6 @@ class CerrarFacturaView(View):
         )
 
         return comprobante
-
-
-# 2906202301185100356400120011000000000113381313914
-# 2906202301185100356400120011000000000113381313913
 
 
     def getMod11Dv(self, num):
