@@ -9,7 +9,7 @@ from django.views import View
 from datetime import date, timedelta
 from django.utils.timezone import now
 
-from django.db.models import Max
+from django.db.models import Max, Sum, Count
 from io import BytesIO
 import json
 import os
