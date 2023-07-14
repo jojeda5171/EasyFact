@@ -772,7 +772,7 @@ class CerrarFacturaView(View):
                 factura.total_iva = total_iva
                 factura.total = total
                 factura.estado = 'cerrada'
-                factura.save()
+                #factura.save()
                 ride = self.generar_pdf_factura(factura, Detalle_factura.objects.filter(
                     id_factura_per=factura.id_factura, id_producto_per__in=Detalle_empresa_producto.objects.filter(id_empresa_per=usuario.id_empresa_per).values('id_producto_per')))
                 xml_data = self.generar_xml(factura, Detalle_factura.objects.filter(
@@ -782,7 +782,7 @@ class CerrarFacturaView(View):
                 documentos = self.guardar_comprobantes(
                     ride, signed_xml, factura.clave_acceso)
                 self.enviar_comprobante_correo(documentos, factura)
-
+                factura.save()
                 datos = SUCCESS_MESSAGE
             else:
                 datos = ERROR_MESSAGE
