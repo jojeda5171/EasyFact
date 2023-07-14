@@ -731,12 +731,10 @@ class AgregarProductoView(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
-    def get(self, request, id_empresa=None):
+    def get(self, request, id_factura=None):
         try:
-            factura_empresa = Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter(
-                id_empresa_per=id_empresa).values('id_usuario'), estado='abierta').values().first()
             detalle_factura = Detalle_factura.objects.filter(
-                id_factura_per=factura_empresa['id_factura']).values()
+                id_factura_per=id_factura).values()
             datos = {"Detalles": list(detalle_factura)}
         except Exception as e:
             datos = ERROR_MESSAGE
