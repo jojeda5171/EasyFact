@@ -1310,7 +1310,8 @@ class ProductoEstrellaView(View):
         if id_empresa is not None:
             fecha_inicio = date.today() - timedelta(days=30)
             subquery_facturas = Factura.objects.filter(
-                id_usuario_per__in=Usuario.objects.filter(id_empresa_per=id_empresa).values('id_usuario'),
+                id_usuario_per__in=Usuario.objects.filter(
+                    id_empresa_per=id_empresa).values('id_usuario'),
                 estado='cerrada',
                 fecha__range=[fecha_inicio, date.today()]
             ).values('id_factura')
@@ -1339,11 +1340,12 @@ class ProductoEstrellaView(View):
 
 
 class ClienteEstrellaView(View):
-    def get (self, request, id_empresa=None):
+    def get(self, request, id_empresa=None):
         if id_empresa is not None:
             fecha_inicio = date.today() - timedelta(days=30)
             subquery_facturas = Factura.objects.filter(
-                id_usuario_per__in=Usuario.objects.filter(id_empresa_per=id_empresa).values('id_usuario'),
+                id_usuario_per__in=Usuario.objects.filter(
+                    id_empresa_per=id_empresa).values('id_usuario'),
                 estado='cerrada',
                 fecha__range=[fecha_inicio, date.today()]
             ).values('id_factura')
