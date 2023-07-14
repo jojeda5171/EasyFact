@@ -1294,8 +1294,8 @@ class FormaPagoView(View):
     def get(self, request, id_forma_pago=None):
         if id_forma_pago is not None:
             forma_pago = Forma_pago.objects.get(id_forma_pago=id_forma_pago)
-            datos= {"Forma_pago": forma_pago}
+            datos= {"Forma_pago": list(forma_pago)}
         else:
             formas_pago = Forma_pago.objects.all()
-            datos= {"Formas_pago": formas_pago}
+            datos= {"Formas_pago": list(formas_pago)}
         return JsonResponse(datos)
