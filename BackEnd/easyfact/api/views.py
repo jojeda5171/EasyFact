@@ -733,7 +733,9 @@ class AgregarProductoView(View):
 class MostrarFacturaView(View):
     def get(self, request, id_empresa=None):
         try:
-            datos= list(Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter(id_empresa_per=id_empresa).values('id_usuario'), estado='cerrada').values())
+            datos= list(Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter(id_empresa_per=id_empresa).values('id_usuario_per'), estado='cerrada').values())
+            #productos = list(Producto.objects.filter(id_producto__in=Detalle_empresa_producto.objects.filter(
+                    #id_empresa_per=id_empresa).values('id_producto_per')).values())
         except Exception as e:
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
