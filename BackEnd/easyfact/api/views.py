@@ -709,8 +709,9 @@ class AgregarProductoView(View):
             # factura = Factura.objects.get(
             # numero_factura=jsonData['id_factura_per'], estado='abierta', id_cliente_per=Cliente.objects.get(numero_identificacion=jsonData['id_cliente_per']).id_cliente, id_usuario_per=usuario.id_usuario)
             factura = Factura.objects.get(
-                id_factura=jsonData['id_factura_per'])
-            if Factura.objects.filter(id_factura=factura.id_factura).exists() and Producto.objects.filter(id_producto=jsonData['id_producto_per']).exists():
+                id_factura=jsonData['id_factura_per'],
+                estado='abierta')
+            if Factura.objects.filter(id_factura=factura.id_factura, estado='abierta').exists() and Producto.objects.filter(id_producto=jsonData['id_producto_per']).exists():
                 producto = Producto.objects.filter(
                     id_producto=jsonData['id_producto_per']).values().first()
                 iva = Iva.objects.get(id_iva=producto['id_iva_per'])
