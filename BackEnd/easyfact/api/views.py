@@ -736,6 +736,9 @@ class MostrarFacturaView(View):
             facturas_empresa= Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter( 
                 id_empresa_per=id_empresa).values('id_usuario'), estado='cerrada').values()
             if facturas_empresa.exists():
+                #cambiar el id del cliente por el nombre del cliente
+                for factura in facturas_empresa:
+                    factura['id_cliente_per'] = Cliente.objects.get(id_cliente=factura['id_cliente_per']).nombre
                 datos = {"Facturas": list(facturas_empresa)}
             else:
                 datos = {"Facturas": []}
