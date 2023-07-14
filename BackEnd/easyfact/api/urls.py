@@ -1,6 +1,6 @@
 from django.urls import path
 # from .views import CompanyView
-from .views import UsuarioVista, EmpresaVista, LogoVista, FirmaVista, IvaVista, ProductoVista, IconoProductoVista, ClienteVista, LicenciaVista, IvaProductoVista, AbrirFacturaView, AgregarProductoView, CerrarFacturaView, MostrarFacturaView, FormaPagoView
+from .views import UsuarioVista, EmpresaVista, LogoVista, FirmaVista, IvaVista, ProductoVista, IconoProductoVista, ClienteVista, LicenciaVista, IvaProductoVista, AbrirFacturaView, AgregarProductoView, CerrarFacturaView, MostrarFacturaView, FormaPagoView, ProductoEstrellaView
 
 urlpatterns = [
     path('usuario/', UsuarioVista.as_view(), name='usuario_lista'),
@@ -31,4 +31,5 @@ urlpatterns = [
     path('verFacturas/<str:id_empresa>/', MostrarFacturaView.as_view(), name='verFacturas_proceso'),
     path('formapago/', FormaPagoView.as_view(), name='formapago_lista'),
     path('formapago/<str:id_forma_pago>/', FormaPagoView.as_view(), name='formapago_proceso'),
+    path('productoestrella/<str:id_empresa>/', ProductoEstrellaView.as_view(), name='productoestrella_proceso'),
 ]

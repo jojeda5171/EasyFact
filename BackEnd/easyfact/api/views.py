@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Usuario, Empresa, Iva, Detalle_empresa_iva, Producto, Detalle_empresa_producto, Cliente, Detalle_empresa_cliente, Licencia, Factura, Detalle_factura, Forma_pago, Documento
 from django.db import IntegrityError
 from django.views import View
-from datetime import date
+from datetime import date, timedelta
 from django.utils.timezone import now
 
 from django.db.models import Max
@@ -21,7 +21,6 @@ from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 import xml.etree.ElementTree as ET
-from datetime import datetime
 import base64
 import hashlib
 from cryptography.hazmat.primitives import serialization
@@ -1290,7 +1289,7 @@ class CerrarFacturaView(View):
         return dv
 
 
-class FormaPagoView(View):
+class FormaPagoView(View):          
     def get(self, request, id_forma_pago=None):
         try:
             if id_forma_pago is not None:
@@ -1301,4 +1300,32 @@ class FormaPagoView(View):
                 datos= {"Formas_pago": list(formas_pago)}
         except :
             datos= {"Formas_pago": []}
+        return JsonResponse(datos)
+    
+
+class ProductoEstrellaView(View):
+    def get(self, request, id_empresa=None):
+        if id_empresa is not None:
+            fecha_inicio = date.today() - timedelta(days=30)
+            producto_mas_vendido = Detalle_factura.objects.filter(
+                id_factura_per__id_usuario_per__id_empresa_per=id_empresa,
+                id_factura_per__fecha__range=[fecha_inicio, date.today()]
+            ).values('id_producto_per').annotate(
+                total_vendido=Sum('cantidad')
+            ).order_by('-total_vendido').first()
+
+            if producto_mas_vendido:
+                id_producto = producto_mas_vendido['id_producto_per']
+                unidades_vendidas = producto_mas_vendido['total_vendido']
+                producto = Producto.objects.get(id_producto=id_producto)
+                datos = {
+                    'producto': producto.producto,
+                    'id_producto': id_producto,
+                    'unidades_vendidas': unidades_vendidas
+                }
+            else:
+                datos= NOT_DATA_MESSAGE
+        else:
+            datos= NOT_DATA_MESSAGE
+
         return JsonResponse(datos)
