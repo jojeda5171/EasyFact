@@ -6,9 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Usuario, Empresa, Iva, Detalle_empresa_iva, Producto, Detalle_empresa_producto, Cliente, Detalle_empresa_cliente, Licencia, Factura, Detalle_factura, Forma_pago, Documento
 from django.db import IntegrityError
 from django.views import View
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.utils.timezone import now
-
 from django.db.models import Max, Sum, Count
 from io import BytesIO
 import json
@@ -687,7 +686,8 @@ class AbrirFacturaView(View):
     def delete(self, request, id_factura=None):
         try:
             if Factura.objects.filter(id_factura=id_factura).exists():
-                Factura.objects.filter(id_factura=id_factura, estado="abierta").delete()
+                Factura.objects.filter(
+                    id_factura=id_factura, estado="abierta").delete()
                 datos = SUCCESS_MESSAGE
             else:
                 datos = NOT_DATA_MESSAGE
@@ -704,11 +704,12 @@ class AgregarProductoView(View):
     def post(self, request):
         try:
             jsonData = json.loads(request.body)
-            #id_factura_per, id_producto_per, cantidad
-            #usuario = Usuario.objects.get(id_usuario=jsonData['id_usuario_per'])
-            #factura = Factura.objects.get(
-                #numero_factura=jsonData['id_factura_per'], estado='abierta', id_cliente_per=Cliente.objects.get(numero_identificacion=jsonData['id_cliente_per']).id_cliente, id_usuario_per=usuario.id_usuario)
-            factura = Factura.objects.get(id_factura=jsonData['id_factura_per'])
+            # id_factura_per, id_producto_per, cantidad
+            # usuario = Usuario.objects.get(id_usuario=jsonData['id_usuario_per'])
+            # factura = Factura.objects.get(
+            # numero_factura=jsonData['id_factura_per'], estado='abierta', id_cliente_per=Cliente.objects.get(numero_identificacion=jsonData['id_cliente_per']).id_cliente, id_usuario_per=usuario.id_usuario)
+            factura = Factura.objects.get(
+                id_factura=jsonData['id_factura_per'])
             if Factura.objects.filter(id_factura=factura.id_factura).exists() and Producto.objects.filter(id_producto=jsonData['id_producto_per']).exists():
                 producto = Producto.objects.filter(
                     id_producto=jsonData['id_producto_per']).values().first()
@@ -743,12 +744,13 @@ class AgregarProductoView(View):
 class MostrarFacturaView(View):
     def get(self, request, id_empresa=None):
         try:
-            facturas_empresa= Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter( 
+            facturas_empresa = Factura.objects.filter(id_usuario_per__in=Usuario.objects.filter(
                 id_empresa_per=id_empresa).values('id_usuario'), estado='cerrada').values()
             if facturas_empresa.exists():
-                #cambiar el id del cliente por el nombre del cliente
+                # cambiar el id del cliente por el nombre del cliente
                 for factura in facturas_empresa:
-                    factura['id_cliente_per'] = Cliente.objects.get(id_cliente=factura['id_cliente_per']).nombre
+                    factura['id_cliente_per'] = Cliente.objects.get(
+                        id_cliente=factura['id_cliente_per']).nombre
                 datos = {"Facturas": list(facturas_empresa)}
             else:
                 datos = {"Facturas": []}
@@ -1268,7 +1270,6 @@ class CerrarFacturaView(View):
 
         return comprobante
 
-
     def getMod11Dv(self, num):
         digits = num[::-1].replace('.', '').replace(',', '')
         if not digits.isdigit():
@@ -1289,19 +1290,20 @@ class CerrarFacturaView(View):
         return dv
 
 
-class FormaPagoView(View):          
+class FormaPagoView(View):
     def get(self, request, id_forma_pago=None):
         try:
             if id_forma_pago is not None:
-                forma_pago = Forma_pago.objects.filter(id_forma_pago=id_forma_pago).values()
-                datos= {"Forma_pago": list(forma_pago)}
+                forma_pago = Forma_pago.objects.filter(
+                    id_forma_pago=id_forma_pago).values()
+                datos = {"Forma_pago": list(forma_pago)}
             else:
                 formas_pago = Forma_pago.objects.filter().values()
-                datos= {"Formas_pago": list(formas_pago)}
-        except :
-            datos= {"Formas_pago": []}
+                datos = {"Formas_pago": list(formas_pago)}
+        except:
+            datos = {"Formas_pago": []}
         return JsonResponse(datos)
-    
+
 
 class ProductoEstrellaView(View):
     def get(self, request, id_empresa=None):
@@ -1324,8 +1326,8 @@ class ProductoEstrellaView(View):
                     'unidades_vendidas': unidades_vendidas
                 }
             else:
-                datos= NOT_DATA_MESSAGE
+                datos = NOT_DATA_MESSAGE
         else:
-            datos= NOT_DATA_MESSAGE
+            datos = NOT_DATA_MESSAGE
 
         return JsonResponse(datos)
