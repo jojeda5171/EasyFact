@@ -419,12 +419,12 @@ class ProductoVista(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
-    def put(self, request, id_empresa=None, producto=None):
+    def put(self, request, id_empresa=None, id_producto=None):
         try:
             jsonData = json.loads(request.body)
-            if Producto.objects.filter(producto=producto).exists():
+            if Producto.objects.filter(id_producto=id_producto).exists():
                 producto = Producto.objects.filter(id_producto__in=Detalle_empresa_producto.objects.filter(
-                    id_empresa_per=id_empresa).values('id_producto_per'), producto=producto).update(producto=jsonData['producto'], precio=jsonData['precio'])
+                    id_empresa_per=id_empresa).values('id_producto_per'), id_producto=id_producto).update(producto=jsonData['producto'], precio=jsonData['precio'])
                 datos = SUCCESS_MESSAGE
             else:
                 datos = NOT_DATA_MESSAGE
@@ -438,11 +438,10 @@ class ProductoVista(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
-    def delete(self, request, id_empresa=None, producto=None):
+    def delete(self, request, id_empresa=None, id_producto=None):
         try:
             producto = Detalle_empresa_producto.objects.filter(
-                id_empresa_per=id_empresa, id_producto_per=Producto.objects.filter(
-                    producto=producto).values('id_producto').first()['id_producto']).delete()
+                id_empresa_per=id_empresa, id_producto_per=id_producto).delete()
             datos = SUCCESS_MESSAGE
         except Exception as e:
             datos = ERROR_MESSAGE
