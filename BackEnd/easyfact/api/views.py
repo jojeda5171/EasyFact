@@ -1292,10 +1292,13 @@ class CerrarFacturaView(View):
 
 class FormaPagoView(View):
     def get(self, request, id_forma_pago=None):
-        if id_forma_pago is not None:
-            forma_pago = Forma_pago.objects.get(id_forma_pago=id_forma_pago)
-            datos= {"Forma_pago": list(forma_pago)}
-        else:
-            formas_pago = Forma_pago.objects.all()
-            datos= {"Formas_pago": list(formas_pago)}
+        try:
+            if id_forma_pago is not None:
+                forma_pago = Forma_pago.objects.filter(id_forma_pago=id_forma_pago).values()
+                datos= {"Forma_pago": list(forma_pago)}
+            else:
+                formas_pago = Forma_pago.objects.filter().values()
+                datos= {"Formas_pago": list(formas_pago)}
+        except :
+            datos= {"Formas_pago": []}
         return JsonResponse(datos)
