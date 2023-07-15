@@ -735,9 +735,7 @@ class AgregarProductoView(View):
         try:
             detalle_factura = Detalle_factura.objects.filter(
                 id_detalle_factura=id_detalle_factura).values().first()
-            #print(detalle_factura)
             detalle_factura['id_producto_per'] = Producto.objects.filter(id_producto=detalle_factura['id_producto_per']).values('producto').first()['producto']
-            #detalle_factura.
             datos = {"Detalles": detalle_factura}
         except Exception as e:
             datos = ERROR_MESSAGE
@@ -755,6 +753,19 @@ class AgregarProductoView(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
+
+class MostrarDetalleFacturaView(View):
+    def get(self, request, id_factura=None):
+        try:
+            if Factura.objects.filter(id_factura=id_factura).exists():
+                detalle_factura = Detalle_factura.objects.filter(
+                    id_factura_per=id_factura).values()
+                datos = {"Detalles": list(detalle_factura)}
+            else:
+                datos = NOT_DATA_MESSAGE
+        except Exception as e:
+            datos = ERROR_MESSAGE
+        return JsonResponse(datos)
 
 class MostrarFacturaView(View):
     def get(self, request, id_empresa=None):
