@@ -799,7 +799,6 @@ class CerrarFacturaView(View):
         jsonData = json.loads(request.body)
         factura = Factura.objects.get(id_factura=jsonData['id_factura_per'])
         try:
-            
             usuario = Usuario.objects.get(id_usuario=factura.id_usuario_per)
             empresa = Empresa.objects.get(id_empresa=usuario.id_empresa_per)
             if factura is not None:
@@ -840,7 +839,7 @@ class CerrarFacturaView(View):
         except:
             factura.estado = 'abierta'
             factura.save()
-            datos = ERROR_MESSAGE
+            return JsonResponse(ERROR_MESSAGE, status=400)
         return JsonResponse(datos)
 
     def generar_pdf_factura(self, factura, detalles_factura):
