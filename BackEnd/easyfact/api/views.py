@@ -725,7 +725,7 @@ class AgregarProductoView(View):
                     total_iva=float(jsonData['cantidad']) *
                     float(producto['precio']) * float(iva.iva)
                 )
-                datos = {"Detalle": detalle_factura}
+                datos = {"Detalle": list(detalle_factura)}
             else:
                 datos = ERROR_MESSAGE
         except Exception as e:
