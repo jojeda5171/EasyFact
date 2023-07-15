@@ -742,6 +742,19 @@ class AgregarProductoView(View):
         return JsonResponse(datos)
 
 
+class EliminarDetalleView(View):
+    def delete(self, request, id_detalle=None):
+        try:
+            if Detalle_factura.objects.filter(id_detalle=id_detalle).exists():
+                Detalle_factura.objects.filter(
+                    id_detalle=id_detalle).delete()
+                datos = SUCCESS_MESSAGE
+            else:
+                datos = NOT_DATA_MESSAGE
+        except Exception as e:
+            datos = ERROR_MESSAGE
+
+
 class MostrarFacturaView(View):
     def get(self, request, id_empresa=None):
         try:
