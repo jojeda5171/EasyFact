@@ -723,7 +723,6 @@ class AgregarProductoView(View):
                 )
                 detalle_factura = Detalle_factura.objects.filter(
                     id_detalle_factura=detalle_factura.id_detalle_factura).values().first()
-                detalle_factura['id_producto_per'] = producto['producto']
                 datos = {"Detalle": detalle_factura}
             else:
                 datos = ERROR_MESSAGE
@@ -732,28 +731,29 @@ class AgregarProductoView(View):
         return JsonResponse(datos)
 
 
-    def get(self, request, id_factura=None):
+    def get(self, request, id_detalle_factura=None):
         try:
             detalle_factura = Detalle_factura.objects.filter(
-                id_factura_per=id_factura).values()
+                id_detalle_factura=id_detalle_factura).values().first()
+            #print(detalle_factura)
+            detalle_factura['id_producto_per'] = Producto.objects.filter(id_producto=detalle_factura['id_producto_per']).values('producto').first()['producto']
             #detalle_factura.
-            datos = {"Detalles": list(detalle_factura)}
+            datos = {"Detalles": detalle_factura}
         except Exception as e:
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
-
-
-class EliminarDetalleView(View):
-    def delete(self, request, id_detalle=None):
+    
+    def delete(self, request, id_detalle_factura=None):
         try:
-            if Detalle_factura.objects.filter(id_detalle=id_detalle).exists():
+            if Detalle_factura.objects.filter(id_detalle_factura=id_detalle_factura).exists():
                 Detalle_factura.objects.filter(
-                    id_detalle=id_detalle).delete()
+                    id_detalle_factura=id_detalle_factura).delete()
                 datos = SUCCESS_MESSAGE
             else:
                 datos = NOT_DATA_MESSAGE
         except Exception as e:
             datos = ERROR_MESSAGE
+        return JsonResponse(datos)
 
 
 class MostrarFacturaView(View):

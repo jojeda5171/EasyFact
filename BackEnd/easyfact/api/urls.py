@@ -1,6 +1,6 @@
 from django.urls import path
 # from .views import CompanyView
-from .views import UsuarioVista, EmpresaVista, LogoVista, FirmaVista, IvaVista, ProductoVista, IconoProductoVista, ClienteVista, LicenciaVista, IvaProductoVista, AbrirFacturaView, AgregarProductoView, CerrarFacturaView, MostrarFacturaView, FormaPagoView, ProductoEstrellaView, ClienteEstrellaView, EliminarDetalleView
+from .views import UsuarioVista, EmpresaVista, LogoVista, FirmaVista, IvaVista, ProductoVista, IconoProductoVista, ClienteVista, LicenciaVista, IvaProductoVista, AbrirFacturaView, AgregarProductoView, CerrarFacturaView, MostrarFacturaView, FormaPagoView, ProductoEstrellaView, ClienteEstrellaView
 
 urlpatterns = [
     path('usuario/', UsuarioVista.as_view(), name='usuario_lista'),
@@ -26,8 +26,7 @@ urlpatterns = [
     path('abrirfactura/', AbrirFacturaView.as_view(), name='abrirfactura_proceso'),
     path('abrirfactura/<str:id_factura>/', AbrirFacturaView.as_view(), name='abrirfactura_proceso'),
     path('agregarproducto/', AgregarProductoView.as_view(), name='agregarproducto_proceso'),
-    path('agregarproducto/<str:id_factura>/', AgregarProductoView.as_view(), name='agregarproducto_proceso'),
-    path('eliminardetalle/<str:id_detalle>/', EliminarDetalleView.as_view(), name='eliminardetalle_proceso'),
+    path('agregarproducto/<str:id_detalle_factura>/', AgregarProductoView.as_view(), name='agregarproducto_proceso'),
     path('cerrarfactura/', CerrarFacturaView.as_view(), name='cerrarfactura_proceso'),
     path('verFacturas/<str:id_empresa>/', MostrarFacturaView.as_view(), name='verFacturas_proceso'),
     path('formapago/', FormaPagoView.as_view(), name='formapago_lista'),
