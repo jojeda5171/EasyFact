@@ -823,9 +823,14 @@ class CerrarFacturaView(View):
                 documentos = self.guardar_comprobantes(
                     ride, signed_xml, factura.clave_acceso)
                 self.enviar_comprobante_correo(documentos, factura)
-                datos = {"Factura": factura}
+                facturas = list(Factura.objects.filter(
+                    id_factura=factura.id_factura).values())
+                #print (facturas)
+                datos = {"Factura": facturas}
             else:
                 datos = ERROR_MESSAGE
+                factura.estado = 'abierta'
+                factura.save()
         except:
             factura.estado = 'abierta'
             factura.save()
