@@ -713,7 +713,6 @@ class AgregarProductoView(View):
             factura = Factura.objects.get(
                 id_factura=jsonData['id_factura_per'], estado='abierta')
             if Factura.objects.filter(id_factura=factura.id_factura, estado='abierta').exists() and Producto.objects.filter(id_producto=jsonData['id_producto_per']).exists():
-                print("entro")
                 producto = Producto.objects.filter(
                     id_producto=jsonData['id_producto_per']).values().first()
                 iva = Iva.objects.get(id_iva=producto['id_iva_per'])
@@ -735,7 +734,6 @@ class AgregarProductoView(View):
         except Exception as e:
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
-
 
     def get(self, request, id_detalle_factura=None):
         try:
@@ -832,7 +830,8 @@ class CerrarFacturaView(View):
                 self.enviar_comprobante_correo(documentos, factura)
                 facturas = list(Factura.objects.filter(
                     id_factura=factura.id_factura).values())
-                #print (facturas)
+                facturas[0]['id_cliente_per'] = Cliente.objects.get(
+                    id_cliente=facturas[0]['id_cliente_per']).nombre
                 datos = {"Factura": facturas}
             else:
                 datos = ERROR_MESSAGE
