@@ -691,6 +691,7 @@ class AbrirFacturaView(View):
     def delete(self, request, id_factura=None):
         try:
             if Factura.objects.filter(id_factura=id_factura).exists():
+                Detalle_factura.objects.filter(id_factura_per=id_factura).delete()
                 Factura.objects.filter(
                     id_factura=id_factura, estado="abierta").delete()
                 datos = SUCCESS_MESSAGE
@@ -771,6 +772,7 @@ class MostrarDetalleFacturaView(View):
         except Exception as e:
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
+
 
 class MostrarFacturaView(View):
     def get(self, request, id_empresa=None):
