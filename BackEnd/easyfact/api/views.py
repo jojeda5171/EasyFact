@@ -791,9 +791,10 @@ class CerrarFacturaView(View):
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request):
+        jsonData = json.loads(request.body)
         factura = Factura.objects.get(id_factura=jsonData['id_factura_per'])
         try:
-            jsonData = json.loads(request.body)
+            
             usuario = Usuario.objects.get(id_usuario=factura.id_usuario_per)
             empresa = Empresa.objects.get(id_empresa=usuario.id_empresa_per)
             if factura is not None:
