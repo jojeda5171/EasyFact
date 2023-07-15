@@ -155,7 +155,7 @@ class EmpresaVista(View):
             with open(firma_path, 'wb') as f:
                 for chunk in firma.chunks():
                     f.write(chunk)
-            Empresa.objects.create(
+            empresa=Empresa.objects.create(
                 licencia_per=jsonData['licencia_per'],
                 ruc=jsonData['ruc'],
                 tipo_contribuyente=jsonData['tipo_contribuyente'],
@@ -169,7 +169,8 @@ class EmpresaVista(View):
                 contrasena_firma_electronica=jsonData['contrasena_firma_electronica'],
                 desarrollo=jsonData['desarrollo']
             )
-            datos = SUCCESS_MESSAGE
+            datos=Empresa.objects.filter(id_empresa=empresa.id_empresa).values().first()
+            datos = {'empresa': datos}
         except:
             return JsonResponse(ERROR_MESSAGE, status=400)
         return JsonResponse(datos)
