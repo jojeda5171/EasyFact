@@ -170,10 +170,8 @@ class EmpresaVista(View):
                 desarrollo=jsonData['desarrollo']
             )
             datos = SUCCESS_MESSAGE
-        except IntegrityError as e:
-            datos = ERROR_MESSAGE
-        except Exception as e:
-            datos = ERROR_MESSAGE
+        except:
+            return JsonResponse(ERROR_MESSAGE, status=400)
         return JsonResponse(datos)
 
     def put(self, request, id_empresa=None):
