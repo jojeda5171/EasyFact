@@ -703,15 +703,15 @@ class AgregarProductoView(View):
 
     def post(self, request):
         try:
+            print("entro al post")
             jsonData = json.loads(request.body)
-            # id_factura_per, id_producto_per, cantidad
-            # usuario = Usuario.objects.get(id_usuario=jsonData['id_usuario_per'])
-            # factura = Factura.objects.get(
-            # numero_factura=jsonData['id_factura_per'], estado='abierta', id_cliente_per=Cliente.objects.get(numero_identificacion=jsonData['id_cliente_per']).id_cliente, id_usuario_per=usuario.id_usuario)
+            print(jsonData['id_factura_per'])
             factura = Factura.objects.get(
-                id_factura=jsonData['id_factura_per'],
-                estado='abierta')
+                id_factura=jsonData['id_factura_per'], estado='abierta')
+            print(factura)
+
             if Factura.objects.filter(id_factura=factura.id_factura, estado='abierta').exists() and Producto.objects.filter(id_producto=jsonData['id_producto_per']).exists():
+                print("entro")
                 producto = Producto.objects.filter(
                     id_producto=jsonData['id_producto_per']).values().first()
                 iva = Iva.objects.get(id_iva=producto['id_iva_per'])
@@ -725,12 +725,15 @@ class AgregarProductoView(View):
                     total_iva=float(jsonData['cantidad']) *
                     float(producto['precio']) * float(iva.iva)
                 )
-                datos = {"Detalle": list(detalle_factura)}
+                detalle_factura = list(Detalle_factura.objects.filter(
+                    id_detalle_factura=detalle_factura.id_detalle_factura).values())
+                datos = {"Detalle": detalle_factura}
             else:
                 datos = ERROR_MESSAGE
         except Exception as e:
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
+
 
     def get(self, request, id_factura=None):
         try:
