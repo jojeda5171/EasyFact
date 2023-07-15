@@ -10,6 +10,7 @@ from datetime import date, timedelta, datetime
 from django.utils.timezone import now
 from django.db.models import Max, Sum, Case, When, IntegerField
 from io import BytesIO
+import pytz
 import json
 import os
 import re
@@ -638,6 +639,9 @@ class AbrirFacturaView(View):
     def post(self, request):
         try:
             jsonData = json.loads(request.body)
+            hora_actual_utc = datetime.now(pytz.utc)
+            zona_horaria_ecuador = pytz.timezone('America/Guayaquil')
+            hora_actual_ecuador = hora_actual_utc.astimezone(zona_horaria_ecuador)
             cliente_id = Cliente.objects.get(
                 numero_identificacion='9999999999999').id_cliente
             usuario = Usuario.objects.get(
@@ -647,7 +651,8 @@ class AbrirFacturaView(View):
                 id_cliente_per=cliente_id,
                 id_usuario_per=usuario.id_usuario,
                 numero_factura=numero_factura,
-                fecha=datetime.now().date(),
+                #fecha=datetime.now().date(),
+                fecha=hora_actual_ecuador.date(),
                 estado='abierta'
             )
             factura = list(Factura.objects.filter(
