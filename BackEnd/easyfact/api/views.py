@@ -69,10 +69,8 @@ class UsuarioVista(View):
     def post(self, request):
         try:
             jsonData = json.loads(request.body)
-            id_empresa_per = Empresa.objects.get(
-                ruc=jsonData['id_empresa_per']).id_empresa
             Usuario.objects.create(
-                id_empresa_per=id_empresa_per,
+                id_empresa_per=jsonData['id_empresa_per'],
                 correo=jsonData['correo'],
                 nombre=jsonData['nombre'],
                 apellido=jsonData['apellido'],
