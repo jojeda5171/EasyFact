@@ -423,7 +423,7 @@ class ProductoVista(View):
             jsonData = json.loads(request.body)
             if Producto.objects.filter(id_producto=id_producto).exists():
                 producto = Producto.objects.filter(id_producto__in=Detalle_empresa_producto.objects.filter(
-                    id_empresa_per=id_empresa).values('id_producto_per'), id_producto=id_producto).update(producto=jsonData['producto'], precio=jsonData['precio'])
+                    id_empresa_per=id_empresa).values('id_producto_per'), id_producto=id_producto).update(producto=jsonData['producto'], precio=jsonData['precio'], id_iva_per=jsonData['id_iva_per'])
                 datos = SUCCESS_MESSAGE
             else:
                 datos = NOT_DATA_MESSAGE
