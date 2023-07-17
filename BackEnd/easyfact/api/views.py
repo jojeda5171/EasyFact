@@ -320,13 +320,16 @@ class IvaVista(View):
                 id_iva = Iva.objects.filter(
                     iva_nombre=jsonData['iva_nombre']).values('id_iva').first()['id_iva']
                 if (Detalle_empresa_iva.objects.filter(id_iva_per=id_iva, id_empresa_per=id_empresa).exists()):
-                    datos = SUCCESS_MESSAGE
+                    
+                    datos = Iva.objects.filter(id_iva=id_iva).values().first()
+                    print (datos)
                 else:
                     Detalle_empresa_iva.objects.create(
                         id_iva_per=id_iva,
                         id_empresa_per=id_empresa
                     )
-                    datos = SUCCESS_MESSAGE
+                    datos = Iva.objects.filter(id_iva=id_iva).values().first()
+                    print (datos)
             else:
                 nuevo_iva = Iva.objects.create(
                     iva_nombre=jsonData['iva_nombre'],
@@ -336,7 +339,7 @@ class IvaVista(View):
                     id_iva_per=nuevo_iva.id_iva,
                     id_empresa_per=id_empresa
                 )
-                datos = SUCCESS_MESSAGE
+                datos = Iva.objects.filter(id_iva=nuevo_iva.id_iva).values().first()
         except Exception as e:
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
