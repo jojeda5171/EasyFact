@@ -783,6 +783,9 @@ class MostrarFacturaView(View):
                     factura['id_cliente_per'] = Cliente.objects.get(
                         id_cliente=factura['id_cliente_per']).nombre
                 datos = {"Facturas": list(facturas_empresa)}
+                #ordenar las facturas por el numero de factura
+                datos['Facturas'].sort(key=lambda x: x['numero_factura'])
+                
             else:
                 datos = {"Facturas": []}
         except Exception as e:
