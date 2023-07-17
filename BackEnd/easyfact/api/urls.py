@@ -13,7 +13,7 @@ urlpatterns = [
     path('firmaempresa/<str:id_empresa>/', FirmaVista.as_view(),
          name='firmaempresa_proceso'),
     path('iva/<str:id_empresa>/', IvaVista.as_view(), name='iva_lista'),
-    path('iva/<str:id_empresa>/<str:iva_nombre>/',
+    path('iva/<str:id_empresa>/<str:id_iva>/',
          IvaVista.as_view(), name='iva_proceso'),
     path('producto/', ProductoVista.as_view(), name='producto_lista'),
     path('producto/<str:id_empresa>/', ProductoVista.as_view(), name='producto_proceso'),

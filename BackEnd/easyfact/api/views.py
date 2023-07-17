@@ -288,11 +288,11 @@ class IvaVista(View):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, id_empresa=None, iva_nombre=None):
+    def get(self, request, id_empresa=None, id_iva=None):
         try:
-            if iva_nombre is not None:
+            if id_iva is not None:
                 iva = list(Iva.objects.filter(id_iva__in=Detalle_empresa_iva.objects.filter(
-                    id_empresa_per=id_empresa).values('id_iva_per'), iva_nombre=iva_nombre).values())
+                    id_empresa_per=id_empresa).values('id_iva_per'), id_iva=id_iva).values())
                 if len(iva) > 0:
                     datos = {'iva': iva[0]}
                 else:
@@ -341,11 +341,11 @@ class IvaVista(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
-    def put(self, request, id_empresa=None, iva_nombre=None):
+    def put(self, request, id_empresa=None, id_iva=None):
         try:
             jsonData = json.loads(request.body)
-            if Iva.objects.filter(iva_nombre=iva_nombre).exists():
-                iva = Iva.objects.filter(iva_nombre=iva_nombre).first()
+            if Iva.objects.filter(id_iva=id_iva).exists():
+                iva = Iva.objects.filter(id_iva=id_iva).first()
                 iva.iva_nombre = jsonData['iva_nombre']
                 iva.iva = jsonData['iva']
                 iva.save()
@@ -356,10 +356,8 @@ class IvaVista(View):
             datos = ERROR_MESSAGE
         return JsonResponse(datos)
 
-    def delete(self, request, id_empresa=None, iva_nombre=None):
+    def delete(self, request, id_empresa=None, id_iva=None):
         try:
-            id_iva = Iva.objects.filter(iva_nombre=iva_nombre).values(
-                'id_iva').first()['id_iva']
             Detalle_empresa_iva.objects.filter(
                 id_empresa_per=id_empresa, id_iva_per=id_iva).delete()
             datos = SUCCESS_MESSAGE
