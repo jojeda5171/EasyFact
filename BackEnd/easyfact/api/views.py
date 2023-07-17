@@ -56,15 +56,17 @@ class UsuarioVista(View):
             if len(usuarios) > 0:
                 usuario = usuarios[0]
                 datos = {'usuario': usuario}
+                return JsonResponse(datos)
             else:
                 datos = NOT_DATA_MESSAGE
+                return JsonResponse(datos, status=400)
         else:
-            usuarios = list(Usuario.objects.values())
+            usuarios = list(Usuario.objects.values()) 
             if len(usuarios) > 0:
                 datos = {'usuarios': usuarios}
+                return JsonResponse(datos)
             else:
-                datos = NOT_DATA_MESSAGE
-        return JsonResponse(datos)
+                return JsonResponse(datos, status=400)
 
     def post(self, request):
         try:
