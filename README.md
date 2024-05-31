@@ -3,36 +3,32 @@ This Django project implements an API for electronic invoicing system. It provid
 
 ## Installation
 1. Clone the Repository
-~~~
-git clone <repository-url>
-cd <project-folder>
-~~~
+  ```bash
+  git clone <repository-url>
+  cd <project-folder>
+  ```
 2. Set Up Environment
 Create a virtual environment and activate it:
-
-~~~
-python3 -m venv venv
-source venv/bin/activate  # On Windows, use venv\Scripts\activate
-~~~
+  ```bash
+  python3 -m venv venv
+  source venv/bin/activate  # On Windows, use venv\Scripts\activate
+  ```
 3. Install Dependencies
 Install the required Python packages using pip:
-
-~~~
-pip install -r requirements.txt
-~~~
+  ```bash
+  pip install -r requirements.txt
+  ```
 4. Set Up Database
 Configure your database settings in settings.py. By default, this project uses SQLite.
-
 Apply migrations to create database schema:
-
-~~~
-python manage.py migrate
-~~~
+  ```bash
+  python manage.py migrate
+  ```
 5. Run the Server
 Start the Django development server:
-
-~~~
-python manage.py runserver
+  ```bash
+  python manage.py runserver
+  ```
 The API will be accessible at http://127.0.0.1:8000/.
 ~~~
 
